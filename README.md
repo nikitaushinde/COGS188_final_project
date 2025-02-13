@@ -1,5 +1,5 @@
 # COGS188 Project template
-Fork this repo. (done)
+Fork this repo. (done B) )
 
 Once you do it is is your repo. You are free to manage the repo as you see fit, edit this README, add data files, add scripts, etc. 
 
