@@ -11,12 +11,14 @@ from tqdm import tqdm
 # NLTK SETUP: Configure directory and resources (my NLTK would not work, so I had to 
 # download it manually and specify the directory)
 
-nltk_data_dir = 'C:/Users/dylan/nltk_data'
+nltk_data_dir = 'C:/Users/dylan/nltk_data' # ADJUST THE PATH AS NEEDED
 nltk.data.path.append(nltk_data_dir)
 nltk.download('punkt', download_dir=nltk_data_dir)
 nltk.download('punkt_tab', download_dir=nltk_data_dir)
 nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_dir)
 nltk.download('wordnet', download_dir=nltk_data_dir)
+
+# Ensure the necessary NLTK datasets are available for tokenization and lemmatization
 
 # COMMENT OUT CODE ABOVE AND REPLACE WITH CODE BELOW, IF IT DOES NOT WORK CHANGE 
 # THE CODE ABOVE TO FIT YOUR OWN DIRECTORY 
@@ -26,6 +28,7 @@ nltk.download('wordnet', download_dir=nltk_data_dir)
 # nltk.download('averaged_perceptron_tagger')
 # nltk.download('wordnet')
 
+# Initialize the WordNet lemmatizer to process words into their base form
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
 
@@ -33,6 +36,8 @@ lemmatizer = WordNetLemmatizer()
 
 with open("recipes_raw_nosource_epi.json", "r", encoding="utf-8") as file:
     recipe_data = json.load(file)
+
+# Load the raw recipe data from the JSON file
 
 recipe_list = [
     {
@@ -42,10 +47,11 @@ recipe_list = [
     }
     for value in recipe_data.values()
 ]
-recipe_df = pd.DataFrame(recipe_list)
+recipe_df = pd.DataFrame(recipe_list)   # Convert the JSON recipe data into a Pandas DataFrame for easier processing
 
 
 # FILTERING FUNCTION: Inclusions and Exclusions
+# This function filters recipes based on specified required (include) and forbidden (exclude) ingredients
 
 def filter_recipes_by_inclusions_and_exclusions(include, exclude, df):
     """
@@ -64,6 +70,7 @@ def filter_recipes_by_inclusions_and_exclusions(include, exclude, df):
     return df[df['ingredients'].apply(filter_func)]
 
 # DEDUPLICATION HELPER FOR INSTRUCTIONS 
+# Function removes duplicate steps in a recipe's instructions
 
 def deduplicate_instructions(instructions):
     """
@@ -83,6 +90,7 @@ def deduplicate_instructions(instructions):
     return " ".join(deduped_sentences)
 
 # COOKING METHODS PROCESSING (Using NLTK)
+# This function extracts verbs from recipe instructions to identify cooking methods
 
 def extract_verbs(text):
     """
@@ -93,6 +101,7 @@ def extract_verbs(text):
     verbs = [lemmatizer.lemmatize(word.lower(), 'v') for word, tag in pos_tags if tag.startswith('VB')]
     return ' '.join(verbs)
 
+# Apply verb extraction to all recipes using Pandas' progress bar
 tqdm.pandas(desc="Extracting verbs")
 recipe_df['verbs'] = recipe_df['instructions'].progress_apply(extract_verbs)
 
@@ -104,9 +113,12 @@ vectorizer = TfidfVectorizer(
     ngram_range=(1, 2),
     min_df=2,
 )
+# Convert extracted cooking methods into numerical features using TF-IDF (Text Frequency - Inverse Document Frequency)
 print("Applying TF-IDF...")
 X = vectorizer.fit_transform(tqdm(recipe_df['verbs'], desc="TF-IDF Processing"))
 
+
+# Cluster recipes based on cooking methods using K-Means clustering
 num_clusters = 15
 kmeans = KMeans(
     n_clusters=num_clusters,
@@ -120,16 +132,20 @@ top_n = 5
 terms = vectorizer.get_feature_names_out()
 clusters = {}
 
+# Identify representative words for each cooking method cluster
 print("Extracting top words for each cluster...")
 for i in tqdm(range(num_clusters), desc="Processing Clusters"):
     words = [terms[ind] for ind in kmeans.cluster_centers_[i].argsort()[-top_n:]]
     clusters[f"Cluster {i+1}"] = words
+
+# Displays all the clustered cooking methods
 
 print("\nCooking Method Clusters:")
 for cluster, words in clusters.items():
     print(f"{cluster}: {words}")
 
 # RECIPE GENERATION 
+# Generates a recipe that meets inclusion/exclusion criteria and removes duplicate steps
 
 def generate_recipe(include, exclude, df):
     """
@@ -146,6 +162,7 @@ def generate_recipe(include, exclude, df):
         f"Instructions:\n{clean_instructions}\n"
     )
     return recipe_text
+
 
 # USER INTERFACE 
 
