@@ -1,0 +1,3 @@
+# this is basically supposed to be like test.json, test.json is more fledged out so use it instead
+{"messages": [{"role": "system", "content": "You are a helpful AI that generates recipes."}, {"role": "user", "content": "I have flour, sugar, and butter. What can I bake?"}, {"role": "assistant", "content": "You can make sugar cookies! Here\u2019s how... 1. Mix flour, sugar, and butter. 2. Bake at 350\u00b0F for 12 minutes."}]}
+{"messages": [{"role": "system", "content": "You are a helpful AI that generates recipes."}, {"role": "user", "content": "I have eggs, milk, and flour. What can I make?"}, {"role": "assistant", "content": "You can make pancakes! Here\u2019s how... 1. Whisk eggs, milk, and flour. 2. Cook on a hot pan until golden brown."}]}
