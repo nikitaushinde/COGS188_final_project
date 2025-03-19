@@ -10,7 +10,6 @@ from tqdm import tqdm
 
 # NLTK SETUP: Configure directory and resources (my NLTK would not work, so I had to 
 # download it manually and specify the directory)
-# Change it to fit your own directory, if downloading it does not work
 
 nltk_data_dir = 'C:/Users/dylan/nltk_data'
 nltk.data.path.append(nltk_data_dir)
@@ -19,7 +18,8 @@ nltk.download('punkt_tab', download_dir=nltk_data_dir)
 nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_dir)
 nltk.download('wordnet', download_dir=nltk_data_dir)
 
-# COMMENT OUT ABOVE CODE AND UNCOMMENT OUT THE CODE BELOW IF IT WORKS ON YOUR COMPUTER:
+# COMMENT OUT CODE ABOVE AND REPLACE WITH CODE BELOW, IF IT DOES NOT WORK CHANGE 
+# THE CODE ABOVE TO FIT YOUR OWN DIRECTORY 
 
 # nltk.download('punkt')
 # nltk.download('punkt_tab')
